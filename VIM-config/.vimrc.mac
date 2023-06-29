@@ -1,0 +1,206 @@
+call plug#begin()
+" Theme
+  Plug 'morhetz/gruvbox'
+
+" File browser
+  Plug 'preservim/nerdTree'                     " File browser  
+  Plug 'Xuyuanp/nerdtree-git-plugin'            " Git status
+  Plug 'ryanoasis/vim-devicons'                 " Icon
+  Plug 'tiagofumo'
+          \ .'/vim-nerdtree-syntax-highlight'
+  Plug 'unkiwii/vim-nerdtree-sync'              " Sync current file 
+
+" File search
+  Plug 'junegunn/fzf', 
+    \ { 'do': { -> fzf#install() } }            " Fuzzy finder 
+  Plug 'junegunn/fzf.vim'
+
+" Status bar
+  Plug 'vim-airline/vim-airline'
+  Plug 'vim-airline/vim-airline-themes'
+
+" Terminal
+  " Plug 'voldikss/vim-floaterm'                  " Float terminal
+
+" Code intellisense
+  " Plug 'neoclide/coc.nvim', 
+  "   \ {'tag': 'v0.0.80'}                     " Language server protocol (LSP) 
+  " Plug 'pappasam/coc-jedi',                     " Jedi language server 
+  Plug 'jiangmiao/auto-pairs'                   " Parenthesis auto 
+  Plug 'alvan/vim-closetag'
+  " Plug 'mattn/emmet-vim' 
+  Plug 'preservim/nerdcommenter'                " Comment code 
+  " Plug 'liuchengxu/vista.vim'                   " Function tag bar 
+  " Plug 'alvan/vim-closetag'                     " Auto close HTML/XML tag 
+  "   \ { 
+  "     \ 'do': 'yarn install '
+  "             \ .'--frozen-lockfile '
+  "             \ .'&& yarn build',
+  "     \ 'branch': 'main' 
+  "   \ }
+
+" Code syntax highlight
+  " Plug 'yuezk/vim-js'                           " Javascript
+  " Plug 'MaxMEllon/vim-jsx-pretty'               " JSX/React
+  " Plug 'jackguo380/vim-lsp-cxx-highlight'       " C/C++
+  " Plug 'uiiaoo/java-syntax.vim'                 " Java
+  
+" Debugging
+  " Plug 'puremourning/vimspector'                " Vimspector
+
+" Source code version control 
+  Plug 'tpope/vim-fugitive'                     " Git infomation 
+  Plug 'tpope/vim-rhubarb' 
+  Plug 'airblade/vim-gitgutter'                 " Git show changes 
+  Plug 'samoshkin/vim-mergetool'                " Git merge
+call plug#end()
+""""" 
+
+" => General settings
+
+set mouse=a                 " Enable mouse
+set tabstop=2               " 
+set shiftwidth=2            " 
+set expandtab
+set listchars=tab:\¦\       " Tab charactor 
+set list
+set foldmethod=syntax       " 
+set foldnestmax=1
+set foldlevelstart=0        "  
+set number                  " Show line number
+set ignorecase              " Enable case-sensitive 
+
+" Disable backup
+set nobackup
+set nowb
+set noswapfile
+
+" Optimize 
+set synmaxcol=200
+set lazyredraw
+au! BufNewFile,BufRead *.json set foldmethod=indent " Change foldmethod for specific filetype
+
+syntax on
+
+" Enable copying from vim to clipboard
+if has('win32')
+  set clipboard=unnamed  
+else
+  set clipboard=unnamedplus
+endif
+
+" Auto reload content changed outside
+au CursorHold,CursorHoldI * checktime
+au FocusGained,BufEnter * :checktime
+autocmd FocusGained,BufEnter,CursorHold,CursorHoldI *
+    \ if mode() !~ '\v(c|r.?|!|t)' && getcmdwintype() == ''
+      \ | checktime 
+    \ | endif
+autocmd FileChangedShellPost *
+    \ echohl WarningMsg 
+    \ | echo "File changed on disk. Buffer reloaded."
+    \ | echohl None
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Key mappings
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" 
+" Resize pane
+nmap <M-Right> :vertical resize +1<CR>    
+nmap <M-Left> :vertical resize -1<CR>
+nmap <M-Down> :resize +1<CR>
+nmap <M-Up> :resize -1<CR>
+
+" Search a hightlighted text
+vnoremap // y/\V<C-R>=escape(@",'/\')<CR><CR>
+nmap /\ :noh<CR>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Plugin Setting
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Set font
+set guifont=Hack\ Nerd\ Font:h13
+
+" Set theme
+if has('gui_running')
+	" set termguicolors
+	colorscheme gruvbox
+	set transparency=2
+	highlight Normal guibg=#b2b2b2 ctermbg=DarkGray
+	let g:airline_theme="gruvbox"
+	set background=dark
+	let g:rehash256 = 1
+else
+	set termguicolors
+	" colorscheme summerfruit256
+	colorscheme landscape
+	" highlight Pmenu ctermfg=blue ctermbg=white
+	" highlight Normal guibg=black ctermbg=black
+	let g:rehash256 = 1
+	let g:airline_theme="night_owl"
+endif
+
+" Disable automatic comment in newline
+autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+
+
+
+
+" Plug settings
+for setting_file in split(glob('~/vim_plugin_config/*.vim'))
+  execute 'source' setting_file
+endfor
+
+let g:coc_disable_startup_warning = 1
+
+
+
+
+
+"open nerd tree
+"nnoremap <space>pv :vs<bar>:Ex<CR>
+"nnoremap <space>nt :NERDTree<CR>
+
+" super tab
+"let g:SuperTabDefaultCompletionType = ''"context"
+"let g:SuperTabContextDefaultCompletionType = ''"<c-n>"
+
+" quick-scope
+"let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+"highlight QuickScopePrimary guifg='#eb4034' gui=bold ctermfg=155 cterm=underline
+"highlight QuickScopeSecondary guifg='#00fff7' gui=bold ctermfg=81 cterm=underline
+
+" nnoremap <S-Enter> O<Esc>
+" nnoremap <CR> o<Esc>
+
+""go to definition
+"function! s:GoToDefinition()
+"  if CocAction('jumpDefinition')
+"    return v:true
+"  endif
+"  let ret = execute("silent! normal \<C-]>")
+"  if ret =~ ''"Error" || ret =~ ''"错误"
+"    call searchdecl(expand('<cword>'))
+"  endif
+"endfunction
+"nnoremap gd :call <SID>GoToDefinition()<CR>
+"if executable('rg')
+"    let g:rg_derive_root='true'
+"endif
+
+" --- vim go (polyglot) settings.
+" let g:go_highlight_build_constraints = 1
+" let g:go_highlight_extra_types = 1
+" let g:go_highlight_fields = 1
+" let g:go_highlight_functions = 1
+" let g:go_highlight_methods = 1
+" let g:go_highlight_operators = 1
+" let g:go_highlight_structs = 1
+" let g:go_highlight_types = 1
+" let g:go_highlight_function_parameters = 1
+" let g:go_highlight_function_calls = 1
+" let g:go_highlight_generate_tags = 1
+" let g:go_highlight_format_strings = 1
+" let g:go_highlight_variable_declarations = 1
+" let g:go_auto_sameids = 1
